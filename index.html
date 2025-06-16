@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tran Bao Huy - International Sales & Digital Marketing</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Chosen Palette: Warm Earth Tones -->
+    <!-- Application Structure Plan: The SPA is a personal portfolio with a top-down narrative. It adds a Gemini-powered Cover Letter Assistant in the Hero section, providing immediate value to recruiters. The flow remains: Hero -> Timeline -> Projects -> Skills -> Contact. This structure tells a compelling story, now enhanced with an interactive AI tool that demonstrates modern tech proficiency. -->
+    <!-- Visualization & Content Choices: 
+        - Cover Letter Generator -> Modal UI with inputs & output textarea -> Gemini API Call -> Justification: Provides a high-value, interactive "wow" factor for the target audience (recruiters) and showcases API integration skills.
+        - Experience & Education -> Interactive Vertical Timeline -> On click, details are shown -> Justification: Visually represents career progression and is more engaging than a static list.
+        - Personal Project Metrics -> Bar Chart (Chart.js) -> On hover, tooltips show data -> Justification: Provides a quick, impactful comparison of project successes.
+        - All interactions are built with vanilla JS. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <style>
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            background-color: #F8F7F4;
+            color: #3D405B;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .timeline-item-content {
+            transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out;
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+        }
+        .timeline-item-content.open {
+            max-height: 500px;
+            opacity: 1;
+        }
+        .nav-link::after {
+            content: '';
+            display: block;
+            width: 0;
+            height: 2px;
+            background: #3A5A40;
+            transition: width .3s;
+        }
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        .gemini-modal {
+            transition: opacity 0.3s ease;
+        }
+        .gemini-modal-content {
+            transition: transform 0.3s ease;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header & Navigation -->
+    <header id="header" class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold text-[#3A5A40]">Tran Bao Huy</h1>
+            <nav class="hidden md:flex space-x-8">
+                <a href="#timeline" class="nav-link text-gray-700 hover:text-[#3A5A40] font-medium">Experience</a>
+                <a href="#projects" class="nav-link text-gray-700 hover:text-[#3A5A40] font-medium">Projects</a>
+                <a href="#skills" class="nav-link text-gray-700 hover:text-[#3A5A40] font-medium">Skills</a>
+                <a href="#contact" class="nav-link text-gray-700 hover:text-[#3A5A40] font-medium">Contact</a>
+            </nav>
+            <button id="mobile-menu-button" class="md:hidden text-gray-700 focus:outline-none">
+                <span class="text-2xl">☰</span>
+            </button>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden">
+            <a href="#timeline" class="block text-center py-2 px-4 text-sm text-gray-700 hover:bg-[#A3B18A]/20">Experience</a>
+            <a href="#projects" class="block text-center py-2 px-4 text-sm text-gray-700 hover:bg-[#A3B18A]/20">Projects</a>
+            <a href="#skills" class="block text-center py-2 px-4 text-sm text-gray-700 hover:bg-[#A3B18A]/20">Skills</a>
+            <a href="#contact" class="block text-center py-2 px-4 text-sm text-gray-700 hover:bg-[#A3B18A]/20">Contact</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-8 md:py-16">
+
+        <!-- Hero Section -->
+        <section id="hero" class="text-center mb-16 md:mb-24">
+            <h2 class="text-4xl md:text-6xl font-bold text-[#3A5A40] mb-4">Tran Bao Huy</h2>
+            <p class="text-lg md:text-xl font-light text-gray-600 mb-6">International Sales & Digital Marketing</p>
+            <div class="max-w-3xl mx-auto mb-8">
+                <p class="text-base md:text-lg text-gray-700 leading-relaxed">
+                    A versatile and results-oriented professional with a unique background spanning International Sales, Digital Marketing, and disciplined leadership. Currently driving global growth at Halena Coffee. Proven experience in content strategy and YouTube channel growth, achieving over 11 million impressions. I combine creative marketing acumen with strategic sales execution and a disciplined, team-oriented approach to achieve business objectives.
+                </p>
+            </div>
+            <button id="open-gemini-modal" class="bg-[#3A5A40] text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-[#2F4833] transition-colors duration-300 transform hover:scale-105">
+                ✨ Generate Cover Letter with AI
+            </button>
+        </section>
+
+        <!-- Timeline Section -->
+        <section id="timeline" class="mb-16 md:mb-24">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl md:text-4xl font-bold text-[#3A5A40] mb-2">Career Journey</h3>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">This timeline outlines my professional journey, highlighting key roles and milestones. Click on any item to see more details.</p>
+            </div>
+            <div id="timeline-container" class="relative max-w-3xl mx-auto">
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects" class="mb-16 md:mb-24">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl md:text-4xl font-bold text-[#3A5A40] mb-2">Project Highlights</h3>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">These personal projects demonstrate my ability to build communities and create viral content from the ground up.</p>
+            </div>
+            <div id="project-cards" class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            </div>
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                 <h4 class="text-xl font-bold text-center text-[#3A5A40] mb-4">Project Performance Overview</h4>
+                <div class="chart-container">
+                    <canvas id="projectsChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills" class="mb-16 md:mb-24">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl md:text-4xl font-bold text-[#3A5A40] mb-2">Abilities & Skills</h3>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">A summary of my core competencies, specialized tools, and professional certifications.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h4 class="text-xl font-semibold text-[#3A5A40] mb-4">Core Competencies</h4>
+                    <ul id="core-skills-list" class="space-y-2 text-gray-700"></ul>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h4 class="text-xl font-semibold text-[#3A5A40] mb-4">Software & Tools</h4>
+                    <ul id="tools-list" class="space-y-2 text-gray-700"></ul>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h4 class="text-xl font-semibold text-[#3A5A40] mb-4">Certifications</h4>
+                    <ul id="certs-list" class="space-y-2 text-gray-700"></ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Contact Footer -->
+    <footer id="contact" class="bg-[#3A5A40] text-white">
+        <div class="container mx-auto px-6 py-10 text-center">
+            <h3 class="text-2xl md:text-3xl font-bold mb-4">Get In Touch</h3>
+            <p class="mb-6">Thank you for visiting. Let's connect!</p>
+            <div class="flex justify-center items-center space-x-6">
+                <p><strong>Email:</strong> ht83112@gmail.com</p>
+                <p><strong>Phone:</strong> (+84) 945 972 727</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Gemini AI Modal -->
+    <div id="gemini-modal" class="gemini-modal fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden opacity-0">
+        <div id="gemini-modal-content" class="gemini-modal-content bg-white rounded-lg shadow-2xl p-6 md:p-8 w-full max-w-2xl transform scale-95">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-2xl font-bold text-[#3A5A40]">✨ AI Cover Letter Assistant</h3>
+                <button id="close-gemini-modal" class="text-gray-500 hover:text-gray-800 text-3xl">&times;</button>
+            </div>
+            <p class="text-gray-600 mb-6">Enter the company name and job position. The AI will generate a draft cover letter based on Tran Bao Huy's profile.</p>
+            
+            <div class="space-y-4">
+                <div>
+                    <label for="company-name" class="block text-sm font-medium text-gray-700">Company Name</label>
+                    <input type="text" id="company-name" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#3A5A40] focus:border-[#3A5A40]" placeholder="e.g., Google">
+                </div>
+                <div>
+                    <label for="job-position" class="block text-sm font-medium text-gray-700">Job Position</label>
+                    <input type="text" id="job-position" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#3A5A40] focus:border-[#3A5A40]" placeholder="e.g., Digital Marketing Manager">
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <button id="generate-letter-button" class="w-full bg-[#3A5A40] text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-[#2F4833] transition-colors duration-300 flex items-center justify-center">
+                    <span id="generate-btn-text">Generate Letter</span>
+                    <div id="loading-spinner" class="hidden w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin ml-2"></div>
+                </button>
+            </div>
+
+            <div id="result-container" class="mt-6 hidden">
+                <h4 class="text-lg font-semibold text-gray-800 mb-2">Draft Cover Letter:</h4>
+                <textarea id="generated-letter" class="w-full h-64 p-3 border border-gray-300 rounded-md bg-gray-50" readonly></textarea>
+                <button id="copy-letter-button" class="mt-2 bg-[#A3B18A] text-white font-bold py-2 px-4 rounded-lg hover:bg-[#84a98c] transition-colors duration-300">
+                    Copy Content
+                </button>
+                 <div id="copy-feedback" class="text-sm text-green-600 mt-2 hidden">Copied to clipboard!</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- DATA ---
+        const experienceData = [
+            { date: "Jan 2025 - Present", title: "International Sales Executive", company: "Halena Coffee", icon: '💼', details: ["Develop and execute strategies to expand market presence and sales in new international territories.", "Build and maintain strong relationships with overseas clients, distributors, and partners.", "Manage the end-to-end export process, including negotiation, documentation, and logistics coordination."] },
+            { date: "2022 - 2024", title: "Squad Leader (Mandatory Police Service)", company: "Vietnam People's Police", icon: '🛡️', details: ["Led and managed a squad, fostering discipline, teamwork, and operational readiness.", "Responsible for coordinating daily duties, training exercises, and ensuring the well-being of team members.", "Developed strong problem-solving and decision-making skills in high-pressure environments."] },
+            { date: "2020 (1 year)", title: "YouTube Manager", company: "Fan90 Entertainment", icon: '▶️', details: ["Managed and executed content strategy for YouTube channels.", "Analyzed performance metrics to optimize for viewership and subscriber growth."] },
+            { date: "2019 (6 months)", title: "Social Content Creator", company: "Mood Entertainment", icon: '✍️', details: ["Developed and created engaging content for various social media platforms.", "Monitored social media trends to inform content strategy."] },
+            { date: "2017", title: "Graduated with Bachelor of Economics", company: "Tay Nguyen University", icon: '🎓', details: [] }
+        ];
+        const projectData = [
+            { name: "ANI STORY", description: "YouTube channel for children's toys & LEGO.", metric: "11M+", metric_label: "Impressions", value: 11000000 },
+            { name: "MANHWA HYTRISM", description: "YouTube channel for comic book reviews.", metric: "3.5K+", metric_label: "Subscribers", value: 3500 },
+            { name: "HELLO PETTY", description: "Experimental YouTube Shorts channel for pets.", metric: "500K+", metric_label: "Views", value: 500000 }
+        ];
+        const skillsData = {
+            core: ["International Sales & Business Development", "Leadership & Team Management", "Digital Marketing & Content Strategy", "Social Media Management", "Keyword Research & SEO", "Video Editing & Production"],
+            tools: ["SEMrush, Ahrefs", "Google Trends, Keywordtool.io", "DaVinci Resolve", "CRM & Sales Platforms"],
+            certs: ["Digital Marketing Course | Coursera (2023)", "Keyword Research Exam | SEMrush (2022)", "Digital Marketing Certified | Hubspot (2022)", "Fundamentals of Digital Marketing | Google (2021)"]
+        };
+
+        // --- RENDER FUNCTIONS ---
+        const timelineContainer = document.getElementById('timeline-container');
+        timelineContainer.innerHTML = `<div class="absolute left-1/2 -translate-x-1/2 top-0 h-full w-0.5 bg-[#A3B18A]/50"></div>`;
+        experienceData.forEach((item, index) => {
+            const isLeft = index % 2 === 0;
+            const timelineItem = document.createElement('div');
+            timelineItem.className = `timeline-item mb-8 flex justify-between items-center w-full ${isLeft ? 'flex-row-reverse' : ''}`;
+            timelineItem.innerHTML = `<div class="order-1 w-5/12"></div><div class="z-20 flex items-center order-1 bg-[#3A5A40] shadow-xl w-12 h-12 rounded-full justify-center text-2xl"><span class="text-white">${item.icon}</span></div><div class="order-1 bg-white rounded-lg shadow-xl w-5/12 px-6 py-4 cursor-pointer hover:shadow-2xl transition-shadow duration-300"><p class="text-sm font-medium text-[#84a98c]">${item.date}</p><h4 class="mb-1 font-bold text-lg">${item.title}</h4><p class="text-sm text-gray-600">${item.company}</p>${item.details.length > 0 ? `<div class="timeline-item-content mt-2 pt-2 border-t border-gray-200"><ul class="list-disc list-inside space-y-1 text-sm text-gray-700">${item.details.map(detail => `<li>${detail}</li>`).join('')}</ul></div>` : ''}</div>`;
+            timelineContainer.appendChild(timelineItem);
+        });
+        const projectCardsContainer = document.getElementById('project-cards');
+        projectData.forEach(project => {
+            const card = document.createElement('div');
+            card.className = 'bg-white rounded-lg shadow-lg p-6 text-center transform hover:-translate-y-2 transition-transform duration-300';
+            card.innerHTML = `<h4 class="text-xl font-bold text-[#3A5A40] mb-2">${project.name}</h4><p class="text-gray-600 mb-4">${project.description}</p><div class="bg-[#A3B18A]/20 rounded-full px-4 py-2"><p class="text-2xl font-bold text-[#3A5A40]">${project.metric}</p><p class="text-sm text-gray-700">${project.metric_label}</p></div>`;
+            projectCardsContainer.appendChild(card);
+        });
+        const coreSkillsList = document.getElementById('core-skills-list');
+        skillsData.core.forEach(skill => coreSkillsList.innerHTML += `<li>${skill}</li>`);
+        const toolsList = document.getElementById('tools-list');
+        skillsData.tools.forEach(tool => toolsList.innerHTML += `<li>${tool}</li>`);
+        const certsList = document.getElementById('certs-list');
+        skillsData.certs.forEach(cert => certsList.innerHTML += `<li class="text-sm">${cert}</li>`);
+
+        // --- CHART.JS SETUP ---
+        const ctx = document.getElementById('projectsChart').getContext('2d');
+        const projectsChart = new Chart(ctx, { type: 'bar', data: { labels: projectData.map(p => p.name), datasets: [{ label: 'Metric Value (Logarithmic Scale)', data: projectData.map(p => p.value), backgroundColor: ['rgba(58, 90, 64, 0.6)', 'rgba(163, 177, 138, 0.6)', 'rgba(132, 169, 140, 0.6)'], borderColor: ['rgba(58, 90, 64, 1)', 'rgba(163, 177, 138, 1)', 'rgba(132, 169, 140, 1)'], borderWidth: 1 }] }, options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', scales: { x: { type: 'logarithmic', beginAtZero: true, title: { display: true, text: 'Value (Logarithmic Scale)' } }, y: { ticks: { font: { size: 14 } } } }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(context) { let label = context.dataset.label || ''; if (label) { label += ': '; } if (context.parsed.x !== null) { label += new Intl.NumberFormat('en-US').format(context.parsed.x); } return label; } } } } } });
+
+        // --- GEMINI API & MODAL LOGIC ---
+        const geminiModal = document.getElementById('gemini-modal');
+        const geminiModalContent = document.getElementById('gemini-modal-content');
+        const openModalButton = document.getElementById('open-gemini-modal');
+        const closeModalButton = document.getElementById('close-gemini-modal');
+        const generateButton = document.getElementById('generate-letter-button');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const generateBtnText = document.getElementById('generate-btn-text');
+        const resultContainer = document.getElementById('result-container');
+        const generatedLetterTextarea = document.getElementById('generated-letter');
+        const copyButton = document.getElementById('copy-letter-button');
+        const copyFeedback = document.getElementById('copy-feedback');
+
+        function toggleModal(show) {
+            if (show) {
+                geminiModal.classList.remove('hidden');
+                setTimeout(() => {
+                    geminiModal.classList.remove('opacity-0');
+                    geminiModalContent.classList.remove('scale-95');
+                }, 10);
+            } else {
+                geminiModal.classList.add('opacity-0');
+                geminiModalContent.classList.add('scale-95');
+                setTimeout(() => geminiModal.classList.add('hidden'), 300);
+            }
+        }
+        
+        openModalButton.addEventListener('click', () => toggleModal(true));
+        closeModalButton.addEventListener('click', () => toggleModal(false));
+        geminiModal.addEventListener('click', (e) => {
+            if (e.target === geminiModal) {
+                toggleModal(false);
+            }
+        });
+
+        generateButton.addEventListener('click', async () => {
+            const companyName = document.getElementById('company-name').value;
+            const jobPosition = document.getElementById('job-position').value;
+            if (!companyName || !jobPosition) {
+                alert('Please enter both Company Name and Job Position.');
+                return;
+            }
+            
+            loadingSpinner.classList.remove('hidden');
+            generateBtnText.textContent = 'Generating...';
+            generateButton.disabled = true;
+            resultContainer.classList.add('hidden');
+            
+            const cvSummary = "Name: Tran Bao Huy. Current Role: International Sales Executive at Halena Coffee. Key Skills: International Sales, Digital Marketing, Leadership, Content Strategy, YouTube Channel Growth. Notable Achievements: Grew a YouTube channel to over 11 million impressions, served as a squad leader in the police force, experienced in expanding international markets for a coffee company.";
+            const prompt = `Based on the following CV summary for Tran Bao Huy, write a professional and concise cover letter in English. He is applying for the position of "${jobPosition}" at "${companyName}".\n\nCV Summary: ${cvSummary}\n\nThe cover letter should be enthusiastic, highlight his unique blend of sales, marketing, and leadership skills, and express strong interest in the role at "${companyName}". Keep the tone professional and the length around 150-200 words.`;
+
+            try {
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
+                
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+
+                if (result.candidates && result.candidates[0] && result.candidates[0].content.parts[0].text) {
+                    const generatedText = result.candidates[0].content.parts[0].text;
+                    generatedLetterTextarea.value = generatedText;
+                    resultContainer.classList.remove('hidden');
+                } else {
+                    generatedLetterTextarea.value = "Sorry, an error occurred while generating the letter. Please try again.";
+                    resultContainer.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error("Gemini API call failed:", error);
+                generatedLetterTextarea.value = `An error occurred: ${error.message}. Please check the console for details.`;
+                resultContainer.classList.remove('hidden');
+            } finally {
+                loadingSpinner.classList.add('hidden');
+                generateBtnText.textContent = 'Generate Letter';
+                generateButton.disabled = false;
+            }
+        });
+
+        copyButton.addEventListener('click', () => {
+            generatedLetterTextarea.select();
+            document.execCommand('copy');
+            copyFeedback.classList.remove('hidden');
+            setTimeout(() => copyFeedback.classList.add('hidden'), 2000);
+        });
+
+        // --- OTHER EVENT LISTENERS ---
+        document.getElementById('mobile-menu-button').addEventListener('click', () => {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        });
+        document.querySelectorAll('.timeline-item .cursor-pointer').forEach(item => {
+            item.addEventListener('click', () => {
+                const content = item.querySelector('.timeline-item-content');
+                if (content) {
+                    content.classList.toggle('open');
+                }
+            });
+        });
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                document.getElementById('mobile-menu').classList.add('hidden');
+            });
+        });
+    });
+    </script>
+</body>
+</html>
