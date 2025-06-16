@@ -11,9 +11,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Chosen Palette: Warm Earth Tones -->
-    <!-- Application Structure Plan: The SPA is a personal portfolio with a top-down narrative. The hero section now features a prominent photo upload area for personalization. The flow is: Hero (Photo + Summary) -> Timeline -> Projects -> Skills -> Contact. This structure provides a professional and visually engaging personal introduction. -->
+    <!-- Application Structure Plan: The SPA is a personal portfolio with a top-down narrative. The hero section now features a prominent photo area for personalization. The flow is: Hero (Photo + Summary) -> Timeline -> Projects -> Skills -> Contact. This structure provides a professional and visually engaging personal introduction. -->
     <!-- Visualization & Content Choices: 
-        - Personal Photo -> Interactive Upload Box -> On click, file dialog opens. On upload, image is displayed -> Justification: Adds a strong personal touch, making the CV more memorable.
+        - Personal Photo -> Static image hosted on GitHub -> Justification: Provides a permanent, professional, and personal touch to the portfolio. The previous upload feature was temporary.
         - Experience & Education -> Interactive Vertical Timeline -> On click, details are shown -> Justification: Visually represents career progression.
         - Personal Project Metrics -> Bar Chart (Chart.js) -> On hover, tooltips show data -> Justification: Provides a quick, impactful comparison of project successes.
         - All interactions are built with vanilla JS. -->
@@ -60,15 +60,6 @@
         .nav-link:hover::after {
             width: 100%;
         }
-        #photo-upload-container {
-            cursor: pointer;
-            border: 2px dashed #A3B18A;
-            transition: border-color 0.3s, background-color 0.3s;
-        }
-        #photo-upload-container:hover {
-            border-color: #3A5A40;
-            background-color: #f0efe9;
-        }
     </style>
 </head>
 <body class="antialiased">
@@ -102,10 +93,17 @@
         <section id="hero" class="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16 mb-16 md:mb-24">
             <!-- Photo -->
             <div class="flex-shrink-0">
-            <div class="w-64 h-80 rounded-lg shadow-xl overflow-hidden">
-            <!-- QUAN TRỌNG: Thay "avatar.jpg" bằng tên tệp ảnh của bạn đã tải lên -->
-        <img src="avatar.jpg" alt="Photo of Tran Bao Huy" class="w-full h-full object-cover">
-            </div>
+                <div class="w-64 h-80 rounded-lg shadow-xl overflow-hidden">
+                    <!-- 
+                      IMPORTANT: 
+                      1. Upload your photo (e.g., 'avatar.jpg') to your GitHub repository.
+                      2. Replace 'your-photo.jpg' below with the actual filename of your photo.
+                    -->
+                    <img src="your-photo.jpg" 
+                         alt="Photo of Tran Bao Huy" 
+                         class="w-full h-full object-cover"
+                         onerror="this.style.display='none'; this.parentElement.innerHTML = '<div class=\'w-full h-full bg-gray-200 flex items-center justify-center\'><span class=\'text-gray-500 text-center p-4\'>Image not found. <br>Please upload your photo and update the path.</span></div>'">
+                </div>
             </div>
             <!-- Bio Text -->
             <div class="text-center md:text-left max-w-2xl">
@@ -226,42 +224,27 @@
         // --- CHART.JS SETUP ---
         const ctx = document.getElementById('projectsChart').getContext('2d');
         new Chart(ctx, { type: 'bar', data: { labels: projectData.map(p => p.name), datasets: [{ label: 'Metric Value (Logarithmic Scale)', data: projectData.map(p => p.value), backgroundColor: ['rgba(58, 90, 64, 0.6)', 'rgba(163, 177, 138, 0.6)', 'rgba(132, 169, 140, 0.6)'], borderColor: ['rgba(58, 90, 64, 1)', 'rgba(163, 177, 138, 1)', 'rgba(132, 169, 140, 1)'], borderWidth: 1 }] }, options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', scales: { x: { type: 'logarithmic', beginAtZero: true, title: { display: true, text: 'Value (Logarithmic Scale)' } }, y: { ticks: { font: { size: 14 } } } }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(context) { let label = context.dataset.label || ''; if (label) { label += ': '; } if (context.parsed.x !== null) { label += new Intl.NumberFormat('en-US').format(context.parsed.x); } return label; } } } } } });
-
-        // --- PHOTO UPLOAD LOGIC ---
-        const photoUploadContainer = document.getElementById('photo-upload-container');
-        const photoInput = document.getElementById('photo-input');
-        const photoPreview = document.getElementById('photo-preview');
-        const uploadText = document.getElementById('upload-text');
-
-        photoUploadContainer.addEventListener('click', () => {
-            photoInput.click();
-        });
-
-        photoInput.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    photoPreview.src = e.target.result;
-                    photoPreview.classList.remove('hidden');
-                    uploadText.classList.add('hidden');
-                }
-                reader.readAsDataURL(file);
-            }
-        });
-
-        // --- OTHER EVENT LISTENERS ---
+        
+        // --- EVENT LISTENERS ---
         document.getElementById('mobile-menu-button').addEventListener('click', () => {
             document.getElementById('mobile-menu').classList.toggle('hidden');
         });
-        document.querySelectorAll('.timeline-item .cursor-pointer').forEach(item => {
-            item.addEventListener('click', () => {
-                const content = item.querySelector('.timeline-item-content');
-                if (content) {
-                    content.classList.toggle('open');
+
+        // BUG FIX: Use event delegation for timeline items
+        const timelineContainerForEvents = document.getElementById('timeline-container');
+        if(timelineContainerForEvents) {
+            timelineContainerForEvents.addEventListener('click', function(event) {
+                // Find the card that was clicked on
+                const card = event.target.closest('.cursor-pointer');
+                if (card) {
+                    const content = card.querySelector('.timeline-item-content');
+                    if (content) {
+                        content.classList.toggle('open');
+                    }
                 }
             });
-        });
+        }
+        
         document.querySelectorAll('#mobile-menu a').forEach(link => {
             link.addEventListener('click', () => {
                 document.getElementById('mobile-menu').classList.add('hidden');
