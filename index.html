@@ -11,10 +11,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Chosen Palette: Warm Earth Tones -->
-    <!-- Application Structure Plan: The SPA is a personal portfolio with a top-down narrative. It adds a Gemini-powered Cover Letter Assistant in the Hero section, providing immediate value to recruiters. The flow remains: Hero -> Timeline -> Projects -> Skills -> Contact. This structure tells a compelling story, now enhanced with an interactive AI tool that demonstrates modern tech proficiency. -->
+    <!-- Application Structure Plan: The SPA is a personal portfolio with a top-down narrative. The hero section now features a prominent photo upload area for personalization. The flow is: Hero (Photo + Summary) -> Timeline -> Projects -> Skills -> Contact. This structure provides a professional and visually engaging personal introduction. -->
     <!-- Visualization & Content Choices: 
-        - Cover Letter Generator -> Modal UI with inputs & output textarea -> Gemini API Call -> Justification: Provides a high-value, interactive "wow" factor for the target audience (recruiters) and showcases API integration skills.
-        - Experience & Education -> Interactive Vertical Timeline -> On click, details are shown -> Justification: Visually represents career progression and is more engaging than a static list.
+        - Personal Photo -> Interactive Upload Box -> On click, file dialog opens. On upload, image is displayed -> Justification: Adds a strong personal touch, making the CV more memorable.
+        - Experience & Education -> Interactive Vertical Timeline -> On click, details are shown -> Justification: Visually represents career progression.
         - Personal Project Metrics -> Bar Chart (Chart.js) -> On hover, tooltips show data -> Justification: Provides a quick, impactful comparison of project successes.
         - All interactions are built with vanilla JS. -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
@@ -60,11 +60,14 @@
         .nav-link:hover::after {
             width: 100%;
         }
-        .gemini-modal {
-            transition: opacity 0.3s ease;
+        #photo-upload-container {
+            cursor: pointer;
+            border: 2px dashed #A3B18A;
+            transition: border-color 0.3s, background-color 0.3s;
         }
-        .gemini-modal-content {
-            transition: transform 0.3s ease;
+        #photo-upload-container:hover {
+            border-color: #3A5A40;
+            background-color: #f0efe9;
         }
     </style>
 </head>
@@ -96,17 +99,26 @@
     <main class="container mx-auto px-6 py-8 md:py-16">
 
         <!-- Hero Section -->
-        <section id="hero" class="text-center mb-16 md:mb-24">
-            <h2 class="text-4xl md:text-6xl font-bold text-[#3A5A40] mb-4">Tran Bao Huy</h2>
-            <p class="text-lg md:text-xl font-light text-gray-600 mb-6">International Sales & Digital Marketing</p>
-            <div class="max-w-3xl mx-auto mb-8">
+        <section id="hero" class="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16 mb-16 md:mb-24">
+            <!-- Photo Upload -->
+            <div class="flex-shrink-0">
+                <div id="photo-upload-container" class="w-64 h-80 rounded-lg bg-white/50 flex items-center justify-center relative shadow-md">
+                    <input type="file" id="photo-input" class="hidden" accept="image/*">
+                    <img id="photo-preview" src="#" alt="Personal Photo" class="w-full h-full object-cover rounded-lg hidden">
+                    <div id="upload-text" class="text-center text-gray-500 p-4">
+                        <span class="text-4xl">👤</span>
+                        <p class="mt-2">Click to upload your photo</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Bio Text -->
+            <div class="text-center md:text-left max-w-2xl">
+                <h2 class="text-4xl md:text-6xl font-bold text-[#3A5A40] mb-4">Tran Bao Huy</h2>
+                <p class="text-lg md:text-xl font-light text-gray-600 mb-6">International Sales & Digital Marketing</p>
                 <p class="text-base md:text-lg text-gray-700 leading-relaxed">
                     A versatile and results-oriented professional with a unique background spanning International Sales, Digital Marketing, and disciplined leadership. Currently driving global growth at Halena Coffee. Proven experience in content strategy and YouTube channel growth, achieving over 11 million impressions. I combine creative marketing acumen with strategic sales execution and a disciplined, team-oriented approach to achieve business objectives.
                 </p>
             </div>
-            <button id="open-gemini-modal" class="bg-[#3A5A40] text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-[#2F4833] transition-colors duration-300 transform hover:scale-105">
-                ✨ Generate Cover Letter with AI
-            </button>
         </section>
 
         <!-- Timeline Section -->
@@ -170,44 +182,6 @@
         </div>
     </footer>
 
-    <!-- Gemini AI Modal -->
-    <div id="gemini-modal" class="gemini-modal fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden opacity-0">
-        <div id="gemini-modal-content" class="gemini-modal-content bg-white rounded-lg shadow-2xl p-6 md:p-8 w-full max-w-2xl transform scale-95">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-2xl font-bold text-[#3A5A40]">✨ AI Cover Letter Assistant</h3>
-                <button id="close-gemini-modal" class="text-gray-500 hover:text-gray-800 text-3xl">&times;</button>
-            </div>
-            <p class="text-gray-600 mb-6">Enter the company name and job position. The AI will generate a draft cover letter based on Tran Bao Huy's profile.</p>
-            
-            <div class="space-y-4">
-                <div>
-                    <label for="company-name" class="block text-sm font-medium text-gray-700">Company Name</label>
-                    <input type="text" id="company-name" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#3A5A40] focus:border-[#3A5A40]" placeholder="e.g., Google">
-                </div>
-                <div>
-                    <label for="job-position" class="block text-sm font-medium text-gray-700">Job Position</label>
-                    <input type="text" id="job-position" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#3A5A40] focus:border-[#3A5A40]" placeholder="e.g., Digital Marketing Manager">
-                </div>
-            </div>
-
-            <div class="mt-6">
-                <button id="generate-letter-button" class="w-full bg-[#3A5A40] text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-[#2F4833] transition-colors duration-300 flex items-center justify-center">
-                    <span id="generate-btn-text">Generate Letter</span>
-                    <div id="loading-spinner" class="hidden w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin ml-2"></div>
-                </button>
-            </div>
-
-            <div id="result-container" class="mt-6 hidden">
-                <h4 class="text-lg font-semibold text-gray-800 mb-2">Draft Cover Letter:</h4>
-                <textarea id="generated-letter" class="w-full h-64 p-3 border border-gray-300 rounded-md bg-gray-50" readonly></textarea>
-                <button id="copy-letter-button" class="mt-2 bg-[#A3B18A] text-white font-bold py-2 px-4 rounded-lg hover:bg-[#84a98c] transition-colors duration-300">
-                    Copy Content
-                </button>
-                 <div id="copy-feedback" class="text-sm text-green-600 mt-2 hidden">Copied to clipboard!</div>
-            </div>
-        </div>
-    </div>
-
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         // --- DATA ---
@@ -255,100 +229,29 @@
 
         // --- CHART.JS SETUP ---
         const ctx = document.getElementById('projectsChart').getContext('2d');
-        const projectsChart = new Chart(ctx, { type: 'bar', data: { labels: projectData.map(p => p.name), datasets: [{ label: 'Metric Value (Logarithmic Scale)', data: projectData.map(p => p.value), backgroundColor: ['rgba(58, 90, 64, 0.6)', 'rgba(163, 177, 138, 0.6)', 'rgba(132, 169, 140, 0.6)'], borderColor: ['rgba(58, 90, 64, 1)', 'rgba(163, 177, 138, 1)', 'rgba(132, 169, 140, 1)'], borderWidth: 1 }] }, options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', scales: { x: { type: 'logarithmic', beginAtZero: true, title: { display: true, text: 'Value (Logarithmic Scale)' } }, y: { ticks: { font: { size: 14 } } } }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(context) { let label = context.dataset.label || ''; if (label) { label += ': '; } if (context.parsed.x !== null) { label += new Intl.NumberFormat('en-US').format(context.parsed.x); } return label; } } } } } });
+        new Chart(ctx, { type: 'bar', data: { labels: projectData.map(p => p.name), datasets: [{ label: 'Metric Value (Logarithmic Scale)', data: projectData.map(p => p.value), backgroundColor: ['rgba(58, 90, 64, 0.6)', 'rgba(163, 177, 138, 0.6)', 'rgba(132, 169, 140, 0.6)'], borderColor: ['rgba(58, 90, 64, 1)', 'rgba(163, 177, 138, 1)', 'rgba(132, 169, 140, 1)'], borderWidth: 1 }] }, options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', scales: { x: { type: 'logarithmic', beginAtZero: true, title: { display: true, text: 'Value (Logarithmic Scale)' } }, y: { ticks: { font: { size: 14 } } } }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(context) { let label = context.dataset.label || ''; if (label) { label += ': '; } if (context.parsed.x !== null) { label += new Intl.NumberFormat('en-US').format(context.parsed.x); } return label; } } } } } });
 
-        // --- GEMINI API & MODAL LOGIC ---
-        const geminiModal = document.getElementById('gemini-modal');
-        const geminiModalContent = document.getElementById('gemini-modal-content');
-        const openModalButton = document.getElementById('open-gemini-modal');
-        const closeModalButton = document.getElementById('close-gemini-modal');
-        const generateButton = document.getElementById('generate-letter-button');
-        const loadingSpinner = document.getElementById('loading-spinner');
-        const generateBtnText = document.getElementById('generate-btn-text');
-        const resultContainer = document.getElementById('result-container');
-        const generatedLetterTextarea = document.getElementById('generated-letter');
-        const copyButton = document.getElementById('copy-letter-button');
-        const copyFeedback = document.getElementById('copy-feedback');
+        // --- PHOTO UPLOAD LOGIC ---
+        const photoUploadContainer = document.getElementById('photo-upload-container');
+        const photoInput = document.getElementById('photo-input');
+        const photoPreview = document.getElementById('photo-preview');
+        const uploadText = document.getElementById('upload-text');
 
-        function toggleModal(show) {
-            if (show) {
-                geminiModal.classList.remove('hidden');
-                setTimeout(() => {
-                    geminiModal.classList.remove('opacity-0');
-                    geminiModalContent.classList.remove('scale-95');
-                }, 10);
-            } else {
-                geminiModal.classList.add('opacity-0');
-                geminiModalContent.classList.add('scale-95');
-                setTimeout(() => geminiModal.classList.add('hidden'), 300);
-            }
-        }
-        
-        openModalButton.addEventListener('click', () => toggleModal(true));
-        closeModalButton.addEventListener('click', () => toggleModal(false));
-        geminiModal.addEventListener('click', (e) => {
-            if (e.target === geminiModal) {
-                toggleModal(false);
-            }
+        photoUploadContainer.addEventListener('click', () => {
+            photoInput.click();
         });
 
-        generateButton.addEventListener('click', async () => {
-            const companyName = document.getElementById('company-name').value;
-            const jobPosition = document.getElementById('job-position').value;
-            if (!companyName || !jobPosition) {
-                alert('Please enter both Company Name and Job Position.');
-                return;
-            }
-            
-            loadingSpinner.classList.remove('hidden');
-            generateBtnText.textContent = 'Generating...';
-            generateButton.disabled = true;
-            resultContainer.classList.add('hidden');
-            
-            const cvSummary = "Name: Tran Bao Huy. Current Role: International Sales Executive at Halena Coffee. Key Skills: International Sales, Digital Marketing, Leadership, Content Strategy, YouTube Channel Growth. Notable Achievements: Grew a YouTube channel to over 11 million impressions, served as a squad leader in the police force, experienced in expanding international markets for a coffee company.";
-            const prompt = `Based on the following CV summary for Tran Bao Huy, write a professional and concise cover letter in English. He is applying for the position of "${jobPosition}" at "${companyName}".\n\nCV Summary: ${cvSummary}\n\nThe cover letter should be enthusiastic, highlight his unique blend of sales, marketing, and leadership skills, and express strong interest in the role at "${companyName}". Keep the tone professional and the length around 150-200 words.`;
-
-            try {
-                const apiKey = "";
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-                const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
-                
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`API Error: ${response.statusText}`);
+        photoInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    photoPreview.src = e.target.result;
+                    photoPreview.classList.remove('hidden');
+                    uploadText.classList.add('hidden');
                 }
-
-                const result = await response.json();
-
-                if (result.candidates && result.candidates[0] && result.candidates[0].content.parts[0].text) {
-                    const generatedText = result.candidates[0].content.parts[0].text;
-                    generatedLetterTextarea.value = generatedText;
-                    resultContainer.classList.remove('hidden');
-                } else {
-                    generatedLetterTextarea.value = "Sorry, an error occurred while generating the letter. Please try again.";
-                    resultContainer.classList.remove('hidden');
-                }
-            } catch (error) {
-                console.error("Gemini API call failed:", error);
-                generatedLetterTextarea.value = `An error occurred: ${error.message}. Please check the console for details.`;
-                resultContainer.classList.remove('hidden');
-            } finally {
-                loadingSpinner.classList.add('hidden');
-                generateBtnText.textContent = 'Generate Letter';
-                generateButton.disabled = false;
+                reader.readAsDataURL(file);
             }
-        });
-
-        copyButton.addEventListener('click', () => {
-            generatedLetterTextarea.select();
-            document.execCommand('copy');
-            copyFeedback.classList.remove('hidden');
-            setTimeout(() => copyFeedback.classList.add('hidden'), 2000);
         });
 
         // --- OTHER EVENT LISTENERS ---
