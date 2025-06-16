@@ -100,17 +100,13 @@
 
         <!-- Hero Section -->
         <section id="hero" class="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16 mb-16 md:mb-24">
-            <!-- Photo Upload -->
-            <div class="flex-shrink-0">
-                <div id="photo-upload-container" class="w-64 h-80 rounded-lg bg-white/50 flex items-center justify-center relative shadow-md">
-                    <input type="file" id="photo-input" class="hidden" accept="image/*">
-                    <img id="photo-preview" src="#" alt="Personal Photo" class="w-full h-full object-cover rounded-lg hidden">
-                    <div id="upload-text" class="text-center text-gray-500 p-4">
-                        <span class="text-4xl">👤</span>
-                        <p class="mt-2">Click to upload your photo</p>
-                    </div>
-                </div>
-            </div>
+            <!-- Photo -->
+<div class="flex-shrink-0">
+    <div class="w-64 h-80 rounded-lg shadow-xl overflow-hidden">
+        <!-- QUAN TRỌNG: Thay "avatar.jpg" bằng tên tệp ảnh của bạn đã tải lên -->
+        <img src="avatar.pnj" alt="Photo of Tran Bao Huy" class="w-full h-full object-cover">
+    </div>
+</div>
             <!-- Bio Text -->
             <div class="text-center md:text-left max-w-2xl">
                 <h2 class="text-4xl md:text-6xl font-bold text-[#3A5A40] mb-4">Tran Bao Huy</h2>
